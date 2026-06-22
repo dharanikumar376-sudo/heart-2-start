@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Motorcycle Safety System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+        
+        .animation-scene {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .road {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: #444;
+            border-top: 4px dashed #ffcc00;
+        }
+        
+        .landscape {
+            position: absolute;
+            bottom: 100px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+        }
+        
+        .sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 200px);
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            z-index: 1;
+        }
+        
+        .sun {
+            position: absolute;
+            top: 40px;
+            right: 80px;
+            width: 70px;
+            height: 70px;
+            background: #f1c40f;
+            border-radius: 50%;
+            box-shadow: 0 0 40px #f39c12;
+        }
+        
+        .rider-container {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            transition: all 0.5s ease;
+        }
+        
+        .rider {
+            position: relative;
+            width: 100px;
+            height: 180px;
+        }
+        
+        .helmet {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            border-radius: 50% 50% 40% 40%;
+            top: -40px;
+            left: 15px;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.7);
+            z-index: 25;
+            display: none;
+        }
+        
+        .helmet::before {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 30% 30% 0 0;
+            top: 15px;
+            left: 10px;
+        }
+        
+        .helmet-strap {
+            position: absolute;
+            width: 70px;
+            height: 20px;
+            background: #333;
+            bottom: -10px;
+            border-radius: 5px;
+        }
+        
+        .head {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #ffd9c0;
+            border-radius: 50%;
+            top: -30px;
+            left: 25px;
+            z-index: 20;
+        }
+        
+        .body {
+            position: absolute;
+            width: 60px;
+            height: 90px;
+            background: #3498db;
+            border-radius: 20px 20px 0 0;
+            top: 20px;
+            left: 20px;
+            z-index: 15;
+        }
+        
+        .arm {
+            position: absolute;
+            width: 20px;
+            height: 70px;
+            background: #3498db;
+            border-radius: 10px;
+            top: 25px;
+        }
+        
+        .arm-left {
+            left: 0;
+            transform: rotate(20deg);
+        }
+        
+        .arm-right {
+            right: 0;
+            transform: rotate(-20deg);
+        }
+        
+        .leg {
+            position: absolute;
+            width: 25px;
+            height: 80px;
+            background: #2980b9;
+            border-radius: 10px 10px 0 0;
+            top: 100px;
+        }
+        
+        .leg-left {
+            left: 20px;
+        }
+        
+        .leg-right {
+            right: 20px;
+        }
+        
+        /* Realistic Motorcycle Design */
+        .motorcycle {
+            position: relative;
+            width: 280px;
+            height: 160px;
+            z-index: 10;
+        }
+        
+        .moto-frame {
+            position: absolute;
+            width: 220px;
+            height: 80px;
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            border-radius: 20px 100px 20px 20px;
+            bottom: 0;
+            left: 30px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .moto-tank {
+            position: absolute;
+            width: 80px;
+            height: 50px;
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            border-radius: 10px 40px 10px 10px;
+            bottom: 60px;
+            left: 60px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .moto-seat {
+            position: absolute;
+            width: 90px;
+            height: 30px;
+            background: #34495e;
+            border-radius: 10px 40px 10px 10px;
+            bottom: 60px;
+            left: 140px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .moto-handlebar {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            border: 5px solid #34495e;
+            border-bottom: none;
+            border-radius: 60px 60px 0 0;
+            bottom: 90px;
+            left: 150px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .moto-handle-grip {
+            position: absolute;
+            width: 20px;
+            height: 30px;
+            background: #2c3e50;
+            border-radius: 10px;
+        }
+        
+        .grip-left {
+            bottom: -5px;
+            left: -5px;
+        }
+        
+        .grip-right {
+            bottom: -5px;
+            right: -5px;
+        }
+        
+        .moto-wheels {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 10px solid #2c3e50;
+            border-radius: 50%;
+            bottom: -20px;
+            background: transparent;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .moto-wheel-front {
+            left: 180px;
+        }
+        
+        .moto-wheel-back {
+            left: 10px;
+        }
+        
+        .wheel-spoke {
+            position: absolute;
+            width: 4px;
+            height: 80px;
+            background: #95a5a6;
+            top: 10px;
+            left: 48px;
+            transform-origin: center;
+        }
+        
+        .spoke2 { transform: rotate(45deg); }
+        .spoke3 { transform: rotate(90deg); }
+        .spoke4 { transform: rotate(135deg); }
+        
+        .moto-exhaust {
+            position: absolute;
+            width: 120px;
+            height: 20px;
+            background: linear-gradient(to right, #7f8c8d, #bdc3c7);
+            border-radius: 10px;
+            bottom: 30px;
+            left: 0;
+            transform: rotate(-20deg);
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .moto-headlight {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #f1c40f;
+            border-radius: 50%;
+            bottom: 70px;
+            left: 250px;
+            box-shadow: 0 0 20px #f39c12, 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .components-panel {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 30;
+        }
+        
+        .component {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .component-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .component-info {
+            flex: 1;
+        }
+        
+        .component-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #ffcc00;
+        }
+        
+        .component-status {
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+        
+        .active {
+            box-shadow: 0 0 15px #2ecc71;
+        }
+        
+        .inactive {
+            box-shadow: 0 0 15px #e74c3c;
+        }
+        
+        .signal {
+            position: absolute;
+            width: 6px;
+            height: 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 3px;
+            top: 150px;
+            left: 50%;
+            opacity: 0;
+            z-index: 5;
+        }
+        
+        .signal.active {
+            animation: signalMove 2s infinite;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            background: #ffdd33;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            height: 40px;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 800px;
+        }
+        
+        .instructions h2 {
+            color: #ffcc00;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        /* Animations */
+        @keyframes signalMove {
+            0% { height: 0; top: 150px; opacity: 1; }
+            100% { height: 100px; top: 50px; opacity: 0; }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.4; transform: scale(0.9); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .moving {
+            animation: moveBike 15s linear infinite;
+        }
+        
+        @keyframes moveBike {
+            0% { left: -300px; }
+            100% { left: 1200px; }
+        }
+        
+        .vibration {
+            animation: vibrate 0.3s linear infinite;
+        }
+        
+        @keyframes vibrate {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(2px); }
+            50% { transform: translateX(0); }
+            75% { transform: translateX(-2px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .rotating {
+            animation: rotateWheel 0.5s linear infinite;
+        }
+        
+        @keyframes rotateWheel {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Component specific styles */
+        .fsr { background: #3498db; }
+        .bluetooth { background: #9b59b6; }
+        .battery { background: #2ecc71; }
+        .ecu { background: #e67e22; }
+        .relay { background: #f1c40f; color: #000; }
+        .fuel-pump { background: #e74c3c; }
+        .ignition { background: #1abc9c; }
+        
+        /* Helmet animation */
+        .helmet-animation {
+            animation: putOnHelmet 2s forwards;
+        }
+        
+        @keyframes putOnHelmet {
+            0% { 
+                transform: translateY(-100px) translateX(-50px) rotate(-45deg);
+                opacity: 0;
+            }
+            50% { 
+                transform: translateY(-50px) translateX(-25px) rotate(-22deg);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translateY(0) translateX(0) rotate(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .components-panel {
+                position: relative;
+                width: 100%;
+                margin-top: 20px;
+                right: 0;
+            }
+            
+            .animation-scene {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HEAD TO START</h1>
+            <div class="subtitle">Smart Helmet-Based Motorcycle Ignition System</div>
+            <p>No Helmet, No Ignition. It's That Simple.</p>
+        </header>
+        
+        <div class="status" id="status">System Ready. Please wear the helmet to start the bike.</div>
+        
+        <div class="controls">
+            <button class="btn" id="wear-btn">WEAR HELMET</button>
+            <button class="btn" id="remove-btn">REMOVE HELMET</button>
+            <button class="btn" id="start-btn">START BIKE</button>
+            <button class="btn" id="demo-btn">FULL DEMO</button>
+        </div>
+        
+        <div class="animation-scene">
+            <div class="sky"></div>
+            <div class="sun"></div>
+            <div class="landscape"></div>
+            <div class="road"></div>
+            
+            <div class="rider-container" id="rider-container">
+                <div class="rider">
+                    <div class="head"></div>
+                    <div class="body"></div>
+                    <div class="arm arm-left"></div>
+                    <div class="arm arm-right"></div>
+                    <div class="leg leg-left"></div>
+                    <div class="leg leg-right"></div>
+                    <div class="helmet" id="helmet">
+                        <div class="helmet-strap"></div>
+                    </div>
+                    
+                    <div class="motorcycle">
+                        <div class="moto-frame"></div>
+                        <div class="moto-tank"></div>
+                        <div class="moto-seat"></div>
+                        <div class="moto-handlebar">
+                            <div class="moto-handle-grip grip-left"></div>
+                            <div class="moto-handle-grip grip-right"></div>
+                        </div>
+                        <div class="moto-exhaust"></div>
+                        <div class="moto-headlight"></div>
+                        
+                        <div class="moto-wheels moto-wheel-back">
+                            <div class="wheel-spoke"></div>
+                            <div class="wheel-spoke spoke2"></div>
+                            <div class="wheel-spoke spoke3"></div>
+                            <div class="wheel-spoke spoke4"></div>
+                        </div>
+                        
+                        <div class="moto-wheels moto-wheel-front">
+                            <div class="wheel-spoke"></div>
+                            <div class="wheel-spoke spoke2"></div>
+                            <div class="wheel-spoke spoke3"></div>
+                            <div class="wheel-spoke spoke4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="signal" id="signal"></div>
+            
+            <div class="components-panel">
+                <div class="component">
+                    <div class="component-icon fsr pulse" id="fsr-icon">FSR</div>
+                    <div class="component-info">
+                        <div class="component-title">Force Sensor</div>
+                        <div class="component-status" id="fsr-status">Detecting pressure</div>
+                    </div>
+                </div>
+                
+                <div class="component">
+                    <div class="component-icon bluetooth" id="bt-icon">BT</div>
+                    <div class="component-info">
+                        <div class="component-title">Bluetooth Module</div>
+                        <div class="component-status" id="bt-status">Standby</div>
+                    </div>
+                </div>
+                
+                <div class="component">
+                    <div class="component-icon battery" id="battery-icon">B</div>
+                    <div class="component-info">
+                        <div class="component-title">Battery</div>
+                        <div class="component-status" id="battery-status">Charged</div>
+                    </div>
+                </div>
+                
+                <div class="component">
+                    <div class="component-icon ecu" id="ecu-icon">ECU</div>
+                    <div class="component-info">
+                        <div class="component-title">Electronic Control Unit</div>
+                        <div class="component-status" id="ecu-status">Awaiting signal</div>
+                    </div>
+                </div>
+                
+                <div class="component">
+                    <div class="component-icon relay" id="relay-icon">R</div>
+                    <div class="component-info">
+                        <div class="component-title">Relay Switch</div>
+                        <div class="component-status" id="relay-status">Circuit open</div>
+                    </div>
+                </div>
+                
+                <div class="component">
+                    <div class="component-icon fuel-pump" id="pump-icon">FP</div>
+                    <div class="component-info">
+                        <div class="component-title">Fuel Pump</div>
+                        <div class="component-status" id="pump-status">Off</div>
+                    </div>
+                </div>
+                
+                <div class="component">
+                    <div class="component-icon ignition" id="ignition-icon">I</div>
+                    <div class="component-info">
+                        <div class="component-title">Ignition System</div>
+                        <div class="component-status" id="ignition-status">Off</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>How The System Works</h2>
+            <ol>
+                <li><strong>Helmet Detection:</strong> The Force-Sensitive Resistor (FSR) sensor inside the helmet detects when it's being worn.</li>
+                <li><strong>Wireless Communication:</strong> The helmet's Bluetooth module sends an "ON" signal to the bike unit.</li>
+                <li><strong>Authentication:</strong> The bike's ECU verifies the signal is from an authorized helmet.</li>
+                <li><strong>Ignition Enable:</strong> If verified, the relay completes the fuel pump circuit, allowing the engine to start.</li>
+                <li><strong>Safety Feature:</strong> If the helmet is removed while riding, the system cuts power to the fuel pump, stopping the engine.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const helmet = document.getElementById('helmet');
+        const signal = document.getElementById('signal');
+        const status = document.getElementById('status');
+        const wearBtn = document.getElementById('wear-btn');
+        const removeBtn = document.getElementById('remove-btn');
+        const startBtn = document.getElementById('start-btn');
+        const demoBtn = document.getElementById('demo-btn');
+        const riderContainer = document.getElementById('rider-container');
+        const wheels = document.querySelectorAll('.moto-wheels');
+        
+        // Component icons
+        const fsrIcon = document.getElementById('fsr-icon');
+        const btIcon = document.getElementById('bt-icon');
+        const batteryIcon = document.getElementById('battery-icon');
+        const ecuIcon = document.getElementById('ecu-icon');
+        const relayIcon = document.getElementById('relay-icon');
+        const pumpIcon = document.getElementById('pump-icon');
+        const ignitionIcon = document.getElementById('ignition-icon');
+        
+        // Component status texts
+        const fsrStatus = document.getElementById('fsr-status');
+        const btStatus = document.getElementById('bt-status');
+        const batteryStatus = document.getElementById('battery-status');
+        const ecuStatus = document.getElementById('ecu-status');
+        const relayStatus = document.getElementById('relay-status');
+        const pumpStatus = document.getElementById('pump-status');
+        const ignitionStatus = document.getElementById('ignition-status');
+        
+        let isHelmetOn = false;
+        let isBikeStarted = false;
+        let isMoving = false;
+        
+        // Function to update component UI
+        function updateComponent(component, active, text) {
+            if (active) {
+                component.classList.remove('inactive');
+                component.classList.add('active');
+            } else {
+                component.classList.remove('active');
+                component.classList.add('inactive');
+            }
+            
+            if (text) {
+                const statusElement = document.getElementById(component.id.replace('-icon', '-status'));
+                if (statusElement) statusElement.textContent = text;
+            }
+        }
+        
+        // Function to start bike movement
+        function startBikeMovement() {
+            riderContainer.classList.add('moving');
+            wheels.forEach(wheel => wheel.classList.add('rotating'));
+            isMoving = true;
+        }
+        
+        // Function to stop bike movement
+        function stopBikeMovement() {
+            riderContainer.classList.remove('moving');
+            wheels.forEach(wheel => wheel.classList.remove('rotating'));
+            isMoving = false;
+        }
+        
+        // Initialize components
+        updateComponent(fsrIcon, false, 'No pressure detected');
+        updateComponent(btIcon, false, 'Standby');
+        updateComponent(batteryIcon, true, 'Charged');
+        updateComponent(ecuIcon, false, 'Awaiting signal');
+        updateComponent(relayIcon, false, 'Circuit open');
+        updateComponent(pumpIcon, false, 'Off');
+        updateComponent(ignitionIcon, false, 'Off');
+        
+        wearBtn.addEventListener('click', () => {
+            helmet.style.display = 'block';
+            helmet.classList.add('helmet-animation');
+            isHelmetOn = true;
+            status.textContent = "Helmet is being worn. You can now start the bike.";
+            
+            // Animate signal
+            signal.classList.add('active');
+            setTimeout(() => {
+                signal.classList.remove('active');
+            }, 2000);
+            
+            // Update components
+            updateComponent(fsrIcon, true, 'Pressure detected');
+            setTimeout(() => updateComponent(btIcon, true, 'Sending signal'), 500);
+            setTimeout(() => updateComponent(ecuIcon, true, 'Signal received'), 1000);
+            setTimeout(() => updateComponent(ecuIcon, true, 'Helmet verified'), 1500);
+            
+            // Remove animation class after it completes
+            setTimeout(() => {
+                helmet.classList.remove('helmet-animation');
+            }, 2000);
+        });
+        
+        removeBtn.addEventListener('click', () => {
+            helmet.style.display = 'none';
+            isHelmetOn = false;
+            
+            if (isBikeStarted) {
+                status.textContent = "Helmet removed! Engine has been shut down for safety.";
+                isBikeStarted = false;
+                stopBikeMovement();
+                
+                // Update components
+                updateComponent(fsrIcon, false, 'No pressure detected');
+                setTimeout(() => updateComponent(btIcon, true, 'Sending signal'), 200);
+                setTimeout(() => updateComponent(ecuIcon, true, 'Signal received'), 400);
+                setTimeout(() => updateComponent(relayIcon, false, 'Circuit open'), 600);
+                setTimeout(() => updateComponent(pumpIcon, false, 'Off'), 800);
+                setTimeout(() => updateComponent(ignitionIcon, false, 'Off'), 1000);
+                setTimeout(() => updateComponent(btIcon, false, 'Standby'), 1200);
+                setTimeout(() => updateComponent(ecuIcon, false, 'Awaiting signal'), 1400);
+            } else {
+                status.textContent = "Helmet removed. Wear the helmet to start the bike.";
+                updateComponent(fsrIcon, false, 'No pressure detected');
+                updateComponent(btIcon, false, 'Standby');
+                updateComponent(ecuIcon, false, 'Awaiting signal');
+            }
+            
+            // Animate signal
+            signal.classList.add('active');
+            setTimeout(() => {
+                signal.classList.remove('active');
+            }, 2000);
+        });
+        
+        startBtn.addEventListener('click', () => {
+            if (isHelmetOn) {
+                isBikeStarted = true;
+                status.textContent = "Bike started successfully. Safe riding!";
+                startBikeMovement();
+                
+                // Update components
+                updateComponent(relayIcon, true, 'Circuit closed');
+                setTimeout(() => updateComponent(pumpIcon, true, 'On'), 300);
+                setTimeout(() => updateComponent(ignitionIcon, true, 'On'), 600);
+                
+            } else {
+                status.textContent = "Cannot start bike. Please wear the helmet first.";
+                
+                // Flash ECU to indicate error
+                updateComponent(ecuIcon, true, 'Error: No helmet detected');
+                setTimeout(() => updateComponent(ecuIcon, false, 'Awaiting signal'), 1000);
+            }
+        });
+        
+        demoBtn.addEventListener('click', () => {
+            // Reset state
+            helmet.style.display = 'none';
+            isHelmetOn = false;
+            isBikeStarted = false;
+            stopBikeMovement();
+            
+            // Reset components
+            updateComponent(fsrIcon, false, 'No pressure detected');
+            updateComponent(btIcon, false, 'Standby');
+            updateComponent(ecuIcon, false, 'Awaiting signal');
+            updateComponent(relayIcon, false, 'Circuit open');
+            updateComponent(pumpIcon, false, 'Off');
+            updateComponent(ignitionIcon, false, 'Off');
+            
+            status.textContent = "Running full demonstration...";
+            
+            // Run demo sequence
+            setTimeout(() => {
+                status.textContent = "Putting on helmet...";
+                helmet.style.display = 'block';
+                helmet.classList.add('helmet-animation');
+                isHelmetOn = true;
+                updateComponent(fsrIcon, true, 'Pressure detected');
+                
+                // Remove animation class after it completes
+                setTimeout(() => {
+                    helmet.classList.remove('helmet-animation');
+                }, 2000);
+            }, 2000);
+            
+            setTimeout(() => {
+                status.textContent = "Sending signal to bike...";
+                signal.classList.add('active');
+                updateComponent(btIcon, true, 'Sending signal');
+            }, 4000);
+            
+            setTimeout(() => {
+                status.textContent = "ECU verifying helmet...";
+                updateComponent(ecuIcon, true, 'Signal received');
+            }, 6000);
+            
+            setTimeout(() => {
+                status.textContent = "Starting bike...";
+                updateComponent(ecuIcon, true, 'Helmet verified');
+                updateComponent(relayIcon, true, 'Circuit closed');
+            }, 8000);
+            
+            setTimeout(() => {
+                status.textContent = "Bike started! Riding...";
+                updateComponent(pumpIcon, true, 'On');
+                updateComponent(ignitionIcon, true, 'On');
+                isBikeStarted = true;
+                startBikeMovement();
+            }, 10000);
+            
+            setTimeout(() => {
+                status.textContent = "Removing helmet while riding...";
+                helmet.style.display = 'none';
+                isHelmetOn = false;
+                updateComponent(fsrIcon, false, 'No pressure detected');
+            }, 15000);
+            
+            setTimeout(() => {
+                status.textContent = "Safety system activated! Stopping bike...";
+                updateComponent(btIcon, true, 'Sending signal');
+                signal.classList.add('active');
+            }, 17000);
+            
+            setTimeout(() => {
+                status.textContent = "Bike engine stopped for safety.";
+                updateComponent(ecuIcon, true, 'Signal received');
+                updateComponent(relayIcon, false, 'Circuit open');
+                updateComponent(pumpIcon, false, 'Off');
+                updateComponent(ignitionIcon, false, 'Off');
+                isBikeStarted = false;
+                stopBikeMovement();
+            }, 19000);
+            
+            setTimeout(() => {
+                status.textContent = "Demonstration complete. System is safe.";
+                updateComponent(btIcon, false, 'Standby');
+                updateComponent(ecuIcon, false, 'Awaiting signal');
+            }, 22000);
+        });
+    </script>
+</body>
+</html>
